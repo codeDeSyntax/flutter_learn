@@ -1,0 +1,383 @@
+import "package:flutter/material.dart";
+import 'package:flutter/services.dart';
+
+class DarkCalendarScreen extends StatefulWidget {
+  const DarkCalendarScreen({Key? key}) : super(key: key);
+
+  @override
+  _DarkCalendarScreenState createState() => _DarkCalendarScreenState();
+}
+
+class _DarkCalendarScreenState extends State<DarkCalendarScreen>
+    with SingleTickerProviderStateMixin {
+  final List<String> _weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  final List<int> _dates = List.generate(7, (index) => index + 22);
+  int _selectedDate = 23;
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+  final TextEditingController _searchController = TextEditingController();
+  List<Event> _filteredEvents = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+    _filteredEvents = _getEventsForDate(_selectedDate);
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<Event> _getEventsForDate(int date) {
+    return allEvents.where((event) => event.date == date).toList();
+  }
+
+  void _filterEvents(String query) {
+    setState(() {
+      _filteredEvents = _getEventsForDate(_selectedDate)
+          .where((event) =>
+              event.title.toLowerCase().contains(query.toLowerCase()) ||
+              event.location.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: KConstantColors.bgColor,
+      appBar: _buildAppBar(context),
+      body: Column(
+        children: [
+          _buildSearchBar(context),
+          _buildCalendar(context),
+          Expanded(
+            child: _buildEventsList(context),
+          ),
+        ],
+      ),
+      floatingActionButton: _buildFloatingActionButton(context),
+      bottomNavigationBar: _buildBottomNavigation(context),
+    );
+  }
+
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.black,
+      elevation: 0,
+      title: Text(
+        'October',
+        style: KCustomTextStyle.kMedium(
+          context,
+          FontSize.kMedium,
+          Colors.white,
+          KConstantFonts.geistMedium,
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {},
+          child: Text(
+            'Meet',
+            style: KCustomTextStyle.kMedium(
+              context,
+              FontSize.kMedium,
+              Colors.blue,
+              KConstantFonts.geistMedium,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSearchBar(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Container(
+          height: 100 + (0 * _animation.value),
+          padding: const EdgeInsets.all(16.0),
+          child: TextField(
+            cursorColor: KConstantColors.whiteColor,
+            controller: _searchController,
+            onChanged: (value) {
+              _filterEvents(value);
+              if (value.isNotEmpty) {
+                _animationController.forward();
+              } else {
+                _animationController.reverse();
+              }
+            },
+            style: KCustomTextStyle.kMedium(
+              context,
+              FontSize.kMedium,
+              Colors.white,
+              KConstantFonts.geistMedium,
+            ),
+            decoration: InputDecoration(
+              hintText: 'Search',
+              hintStyle: KCustomTextStyle.kMedium(
+                context,
+                FontSize.kMedium,
+                Colors.grey,
+                KConstantFonts.geistMedium,
+              ),
+              prefixIcon: const Icon(Icons.search, color: Colors.grey),
+              filled: true,
+              fillColor: Colors.grey[900],
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildCalendar(BuildContext context) {
+    return SizedBox(
+      height: 100,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: _dates.length,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedDate = _dates[index];
+                _filteredEvents = _getEventsForDate(_selectedDate);
+              });
+            },
+            child: Container(
+              width: 50,
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              decoration: BoxDecoration(
+                color: _dates[index] == _selectedDate
+                    ? KConstantColors.whiteColor
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    _weekDays[index],
+                    style: KCustomTextStyle.kMedium(
+                      context,
+                      FontSize.kSmall,
+                      _dates[index] == _selectedDate
+                          ? Colors.black
+                          : Colors.grey,
+                      KConstantFonts.geistMedium,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    _dates[index].toString(),
+                    style: KCustomTextStyle.kMedium(
+                      context,
+                      FontSize.kMedium,
+                      _dates[index] == _selectedDate
+                          ? Colors.black
+                          : Colors.grey,
+                      KConstantFonts.geistMedium,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildEventsList(BuildContext context) {
+    return ListView.builder(
+      itemCount: _filteredEvents.length,
+      itemBuilder: (context, index) {
+        return _buildEventItem(context, _filteredEvents[index]);
+      },
+    );
+  }
+
+  Widget _buildEventItem(BuildContext context, Event event) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey[900],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            event.title,
+            style: KCustomTextStyle.kMedium(
+              context,
+              FontSize.kMedium,
+              Colors.white,
+              KConstantFonts.geistMedium,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            event.time,
+            style: KCustomTextStyle.kMedium(
+              context,
+              FontSize.kSmall,
+              Colors.grey,
+              KConstantFonts.geistMedium,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            event.location,
+            style: KCustomTextStyle.kMedium(
+              context,
+              FontSize.kSmall,
+              KConstantColors.faintWhiteColor,
+              KConstantFonts.geistMedium,
+            ),
+          ),
+          if (event.hasJoinButton) ...[
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              child: Text(
+                'Join',
+                style: KCustomTextStyle.kMedium(
+                  context,
+                  FontSize.kSmall,
+                  Colors.black,
+                  KConstantFonts.geistMedium,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFloatingActionButton(BuildContext context) {
+    return FloatingActionButton(
+      onPressed: () {},
+      backgroundColor: Colors.blue,
+      child: const Icon(
+        Icons.add,
+        color: KConstantColors.whiteColor,
+      ),
+    );
+  }
+
+  Widget _buildBottomNavigation(BuildContext context) {
+    return BottomNavigationBar(
+      backgroundColor: Colors.black,
+      selectedItemColor: Colors.blue,
+      unselectedItemColor: Colors.grey,
+      type: BottomNavigationBarType.fixed,
+      items: const [
+        BottomNavigationBarItem(icon: Icon(Iconsax.home), label: 'Home'),
+        BottomNavigationBarItem(icon: Icon(Iconsax.message), label: 'Chat'),
+        BottomNavigationBarItem(
+            icon: Icon(Iconsax.calendar), label: 'Calendar'),
+        BottomNavigationBarItem(
+            icon: Icon(Iconsax.notification), label: 'Notifications'),
+      ],
+    );
+  }
+}
+
+class Event {
+  final int date;
+  final String title;
+  final String time;
+  final String location;
+  final bool hasJoinButton;
+
+  Event({
+    required this.date,
+    required this.title,
+    required this.time,
+    required this.location,
+    this.hasJoinButton = false,
+  });
+}
+
+final List<Event> allEvents = [
+  Event(
+    date: 22,
+    title: 'Team Meeting',
+    time: '10:00 AM - 11:00 AM',
+    location: 'Conference Room A',
+    hasJoinButton: true,
+  ),
+  Event(
+    date: 23,
+    title: 'Project Kickoff',
+    time: '2:00 PM - 3:30 PM',
+    location: 'Virtual Meeting Room',
+    hasJoinButton: true,
+  ),
+  Event(
+    date: 23,
+    title: 'Lunch with Client',
+    time: '12:30 PM - 1:30 PM',
+    location: 'Bistro Downtown',
+  ),
+  Event(
+    date: 24,
+    title: 'Code Review',
+    time: '11:00 AM - 12:00 PM',
+    location: 'Dev Team Channel',
+    hasJoinButton: true,
+  ),
+  Event(
+    date: 25,
+    title: 'Team Building',
+    time: '3:00 PM - 5:00 PM',
+    location: 'City Park',
+  ),
+  Event(
+    date: 26,
+    title: 'Product Demo',
+    time: '10:30 AM - 11:30 AM',
+    location: 'Main Conference Room',
+    hasJoinButton: true,
+  ),
+  Event(
+    date: 27,
+    title: 'Weekly Standup',
+    time: '9:00 AM - 9:30 AM',
+    location: 'Zoom Meeting',
+    hasJoinButton: true,
+  ),
+  Event(
+    date: 28,
+    title: 'Client Presentation',
+    time: '2:00 PM - 3:00 PM',
+    location: 'Board Room',
+    hasJoinButton: true,
+  ),
+];
