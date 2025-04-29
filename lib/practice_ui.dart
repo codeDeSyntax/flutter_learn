@@ -19,29 +19,36 @@ class TeamReachHomePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 16),
-                _buildHeader(),
-                const SizedBox(height: 16),
-                _buildWelcome(),
-                const SizedBox(height: 10),
-                _buildGroupCodeInput(),
-                const SizedBox(height: 15),
-                _buildYourGroupsSection(),
-                const SizedBox(height: 32),
-                _buildOtherGroupsSection(),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: _buildBottomNavBar(),
+        child: Stack(
+          children: [
+            // Main scrollable content
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 16),
+                    _buildHeader(),
+                    const SizedBox(height: 16),
+                    _buildWelcome(),
+                    const SizedBox(height: 10),
+                    _buildGroupCodeInput(),
+                    const SizedBox(height: 15),
+                    _buildYourGroupsSection(),
+                    const SizedBox(height: 15),
+                    _buildOtherGroupsSection(),
+                    const SizedBox(
+                      height: 200,
+                    ), // Extra padding at bottom to prevent content from being hidden behind the floating nav bar
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
+
+            // Floating navigation bar
+            _buildBottomNavBar(),
+          ],
         ),
       ),
     );
@@ -515,43 +522,61 @@ class TeamReachHomePage extends StatelessWidget {
   }
 
   Widget _buildOtherGroupsSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Other Groups',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            TextButton(
-              onPressed: () {},
-              style: TextButton.styleFrom(
-                minimumSize: Size.zero,
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Other Groups',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              child: const Text(
-                'See All',
-                style: TextStyle(color: Colors.grey),
+              TextButton(
+                onPressed: () {},
+                style: TextButton.styleFrom(
+                  minimumSize: Size.zero,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: const Text(
+                  'See All',
+                  style: TextStyle(color: Colors.grey),
+                ),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        _buildOtherGroupItem(
-          icon: Icons.sports_football,
-          title: 'Lions Football',
-          role: 'Member',
-        ),
-        const SizedBox(height: 8),
-        _buildOtherGroupItem(
-          icon: Icons.music_note,
-          title: 'Band Practice',
-          role: 'Invited',
-        ),
-      ],
+            ],
+          ),
+          const SizedBox(height: 12),
+          _buildOtherGroupItem(
+            icon: Icons.skateboarding,
+            title: 'Sky skateboard',
+            role: 'Member',
+          ),
+          const SizedBox(height: 8),
+          _buildOtherGroupItem(
+            icon: Icons.music_note,
+            title: 'Band Practice',
+            role: 'Invited',
+          ),
+        ],
+      ),
     );
   }
 
@@ -561,9 +586,9 @@ class TeamReachHomePage extends StatelessWidget {
     required String role,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
+        // color: Colors.grey.shade100,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -571,7 +596,7 @@ class TeamReachHomePage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.blue.shade100,
+              // color: Colors.blue.shade100,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(icon, color: const Color(0xFF0760fb)),
@@ -617,54 +642,65 @@ class TeamReachHomePage extends StatelessWidget {
   }
 
   Widget _buildBottomNavBar() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-      // decoration: BoxDecoration(
-      //   gradient: LinearGradient(
-      //     colors: [Color(0xFFd3d3d2), Color(0xFFF6F6F6)], // Gradient colors
-      //     begin: Alignment.topLeft, // Start from top-left
-      //     end: Alignment.bottomRight, // End at bottom-right
-      //   ),
-      //   color: Colors.grey.shade100,
-      //   borderRadius: BorderRadius.circular(30),
-      // ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xFFd3d3d2),
-                  Color(0xFFF6F6F6),
-                ], // Gradient colors
-                begin: Alignment.topLeft, // Start from top-left
-                end: Alignment.bottomRight, // End at bottom-right
+    return Positioned(
+      left: 16,
+      right: 16,
+      bottom: 0,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xFFd3d3d2),
+                    Color(0xFFF6F6F6),
+                  ], // Gradient colors
+                  begin: Alignment.topLeft, // Start from top-left
+                  end: Alignment.bottomRight, // End at bottom-right
+                ),
+                borderRadius: BorderRadius.circular(100),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: Offset(0, 5),
+                  ),
+                ],
               ),
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(100),
+              child: Row(
+                children: [
+                  _buildNavItem(Icons.home, isSelected: true),
+                  SizedBox(width: 10),
+                  _buildNavItem(Icons.search),
+                  SizedBox(width: 10),
+                  _buildNavItem(Icons.forum_outlined),
+                  SizedBox(width: 10),
+                  _buildNavItem(Icons.person_outline),
+                ],
+              ),
             ),
-            child: Row(
-              spacing: 10,
-              children: [
-                _buildNavItem(Icons.home, isSelected: true),
-                _buildNavItem(Icons.search),
-                _buildNavItem(Icons.forum_outlined),
-                _buildNavItem(Icons.person_outline),
-              ],
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: const Color(0xFF0760fb),
+                borderRadius: BorderRadius.circular(104),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.add, color: Colors.white),
             ),
-          ),
-          Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(
-              color: const Color(0xFF0760fb),
-              borderRadius: BorderRadius.circular(104),
-            ),
-            child: const Icon(Icons.add, color: Colors.white),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

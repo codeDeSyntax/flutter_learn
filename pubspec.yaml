@@ -40,6 +40,10 @@ dependencies:
   form_field_validator: ^1.1.0
   animations: ^2.0.11
   flutter_credit_card: ^3.0.3
+  font_awesome_flutter: ^10.8.0
+  firebase_auth: 4.20.0
+  firebase_core: ^2.32.0
+  google_sign_in: ^6.3.0
 
 dev_dependencies:
   flutter_test:

@@ -1,3 +1,5 @@
+import 'package:flut_apps/auth_with_firebase/authentication.dart';
+
 class AppRoutes {
   /// The Initial Page
   static const introLogin = '/intro_login';
@@ -73,4 +75,7 @@ class AppRoutes {
   /* <---- Payment Method -----> */
   static const paymentMethod = '/paymentMethod';
   static const paymentCardAdd = '/paymentCardAdd';
+
+  static const authHomeSuccess = '/authHomeSuccess';
+  static const authScreen = '/authScreen';
 }

@@ -1,3 +1,5 @@
+import 'package:flut_apps/auth_with_firebase/authentication.dart';
+import 'package:flut_apps/auth_with_firebase/home_on_success.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../views/auth/forget_password_page.dart';
@@ -196,6 +198,12 @@ class RouteGenerator {
 
       case AppRoutes.paymentCardAdd:
         return CupertinoPageRoute(builder: (_) => const AddNewCardPage());
+
+      case AppRoutes.authHomeSuccess:
+        return CupertinoPageRoute(builder: (_) => const AuthHome());
+
+      case AppRoutes.authScreen:
+        return CupertinoPageRoute(builder: (_) => const AuthScreen());
 
       default:
         return errorRoute();
