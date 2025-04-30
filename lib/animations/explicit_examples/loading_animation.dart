@@ -4,7 +4,7 @@ class RadialProgressAnimation extends StatefulWidget {
   final double progress;
   final Color color;
 
-  const RadialProgressAnimation({
+  const RadialProgressAnimation(double d, {
     super.key,
     required this.progress,
     required this.color,

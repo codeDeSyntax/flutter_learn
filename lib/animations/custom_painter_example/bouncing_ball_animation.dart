@@ -34,19 +34,34 @@ class _BouncingBallAnimationState extends State<BouncingBallAnimation>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            AnimatedBuilder(
-              animation: animation,
-              builder: (context, child) => CustomPaint(
-                size: const Size(200, 200),
-                painter: BouncingBallPainter(animation.value),
-              ),
-            ),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: SweepGradient(
+          center: Alignment.center,
+          colors: [
+            // Start color
+            Colors.grey.shade900,
+            Colors.black,
+            Colors.grey.shade800,
           ],
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              AnimatedBuilder(
+                animation: animation,
+                builder:
+                    (context, child) => CustomPaint(
+                      size: const Size(200, 200),
+                      painter: BouncingBallPainter(animation.value),
+                    ),
+              ),
+            ],
+          ),
         ),
       ),
     );
